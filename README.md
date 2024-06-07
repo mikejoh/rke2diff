@@ -2,8 +2,8 @@
 
 `rke2diff` - Diff Rancher RKE2 releases! 🚀
 
-**Features:**
-* Marks versions as not valid (failed to parse or invalid semver)
+**Notes:**
+* This tool are using the GitHub API to fetch releases, the API's are rate limited to 60 requests for unauthenticated requests, more info about rate limiting can be found [here](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28).
 
 ## Install
 
