@@ -3,7 +3,7 @@
 `rke2diff` - Diff Rancher RKE2 releases! 🚀
 
 **Notes:**
-* This tool are using the GitHub API to fetch releases, the API's are rate limited to 60 requests for unauthenticated requests, more info about rate limiting can be found [here](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28).
+* This tool uses the GitHub API to fetch releases. The API is rate-limited to 60 requests for unauthenticated requests. More info about rate limiting can be found [here](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28).
 
 ## Install
 
