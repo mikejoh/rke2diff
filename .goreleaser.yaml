@@ -1,0 +1,3 @@
+builds:
+  - main: ./cmd/rke2diff/
+dist: ./build
