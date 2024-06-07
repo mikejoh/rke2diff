@@ -6,12 +6,6 @@ release:
   name_template: 'v{{.Tag}}'
 builds:
   - id: rke2diff
-    goos:
-      - linux
-      - darwin
-      - windows
-    goarch:
-      - amd64
     targets:
       - linux_amd64_v1
       - darwin_amd64_v1
