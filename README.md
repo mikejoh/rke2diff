@@ -7,8 +7,27 @@
 
 ## Install
 
-1. `make build`
-2. `make install`
+### From source
+
+1. `git clone https://github.com/mikejoh/rke2diff.git`
+2. `cd rke2diff`
+3. `make build`
+4. `make install` (assumes thath `~/.local/bin` is used)
+
+### Download and run
+
+1. Download (using `v0.1.3` as an example):
+```
+curl -LO https://github.com/mikejoh/rke2diff/releases/download/0.1.3/rke2diff_0.1.3_linux_amd64.tar.gz
+```
+2. Unpack:
+```
+tar xzvf rke2diff_0.1.3_linux_amd64.tar.gz
+```
+3. Run:
+```
+./rke2diff -version
+```
 
 ## Usage
 
