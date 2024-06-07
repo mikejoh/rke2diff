@@ -28,7 +28,7 @@ func mdToHTML(md []byte) []byte {
 	return markdown.Render(doc, renderer)
 }
 
-func parseHTMLTable(htmlStr string, startElement string, id string) []Component {
+func parseHTMLTable(htmlStr, startElement, id string) []Component {
 	doc, err := html.Parse(strings.NewReader(htmlStr))
 	if err != nil {
 		log.Fatal(err)
