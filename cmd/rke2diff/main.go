@@ -18,7 +18,7 @@ import (
 type rke2diffOptions struct {
 	version      bool
 	rke2Versions rkeVersionSlice
-	showReleases bool
+	releases     bool
 }
 
 type GitHubProject struct {
@@ -52,8 +52,8 @@ const (
 func main() {
 	var rke2diffOpts rke2diffOptions
 	flag.BoolVar(&rke2diffOpts.version, "version", false, "Print the version number.")
-	flag.BoolVar(&rke2diffOpts.showReleases, "show-releases", false, "Show all releases.")
-	flag.Var(&rke2diffOpts.rke2Versions, "rke2", "RKE2 version to compare.")
+	flag.BoolVar(&rke2diffOpts.releases, "releases", false, "Show all releases.")
+	flag.Var(&rke2diffOpts.rke2Versions, "rke2", "RKE2 version to compare, can be set multiple times.")
 	flag.Parse()
 
 	if rke2diffOpts.version {
@@ -61,10 +61,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	if len(rke2diffOpts.rke2Versions) == 0 {
-		// TODO: Just output the latest release here?
-		log.Fatal("one RKE2 version is required")
-	} else if len(rke2diffOpts.rke2Versions) > 2 {
+	if len(rke2diffOpts.rke2Versions) > 2 {
 		log.Fatal("only two RKE2 versions can be compared")
 	}
 
@@ -77,6 +74,33 @@ func main() {
 	}
 
 	ctx := context.Background()
+
+	if rke2diffOpts.releases {
+		releases, _, err := ghClient.Repositories.ListReleases(ctx, project.Owner, project.Repo, &github.ListOptions{
+			PerPage: 1000,
+		})
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		t := table.NewWriter()
+		t.SetOutputMirror(os.Stdout)
+		t.SetStyle(table.StyleLight)
+		header := table.Row{
+			"Release",
+			"Published At",
+		}
+		t.AppendHeader(header)
+		t.Style().Title.Align = text.AlignCenter
+
+		for _, release := range releases {
+			t.AppendRow(table.Row{release.GetTagName(), release.GetPublishedAt()})
+		}
+
+		t.Render()
+
+		os.Exit(0)
+	}
 
 	// TODO: Use response to tell user how many GH API calls can be done before hitting the rate limit
 	releases, _, err := ghClient.Repositories.ListReleases(ctx, project.Owner, project.Repo, &github.ListOptions{
