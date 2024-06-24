@@ -12,7 +12,7 @@
 1. `git clone https://github.com/mikejoh/rke2diff.git`
 2. `cd rke2diff`
 3. `make build`
-4. `make install` (assumes thath `~/.local/bin` is used)
+4. `make install` (assumes that `~/.local/bin` is used)
 
 ### Download and run
 
