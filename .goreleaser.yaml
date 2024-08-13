@@ -4,7 +4,7 @@ release:
   github:
     owner: mikejoh
     name: rke2diff
-  name_template: 'v{{.Tag}}'
+  name_template: 'v{{ .Tag }}'
 builds:
   - id: rke2diff
     targets:
