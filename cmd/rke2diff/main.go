@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"sort"
+	"strings"
 
 	"github.com/google/go-github/v62/github"
 	gversion "github.com/hashicorp/go-version"
@@ -19,6 +20,7 @@ type rke2diffOptions struct {
 	version      bool
 	rke2Versions rkeVersionSlice
 	releases     bool
+	skipRc       bool
 }
 
 type GitHubProject struct {
@@ -53,6 +55,7 @@ func main() {
 	var rke2diffOpts rke2diffOptions
 	flag.BoolVar(&rke2diffOpts.version, "version", false, "Print the version number.")
 	flag.BoolVar(&rke2diffOpts.releases, "releases", false, "Show all releases.")
+	flag.BoolVar(&rke2diffOpts.skipRc, "skip-rc", false, "Skip release candidate releases.")
 	flag.Var(&rke2diffOpts.rke2Versions, "rke2", "RKE2 version to compare, can be set multiple times.")
 	flag.Parse()
 
@@ -94,6 +97,9 @@ func main() {
 		t.Style().Title.Align = text.AlignCenter
 
 		for _, release := range releases {
+			if rke2diffOpts.skipRc && strings.Contains(release.GetTagName(), "rc") {
+				continue
+			}
 			t.AppendRow(table.Row{release.GetTagName(), release.GetPublishedAt()})
 		}
 
