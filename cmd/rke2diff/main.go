@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
+	"runtime"
 	"sort"
 	"strings"
 
@@ -13,6 +15,7 @@ import (
 	gversion "github.com/hashicorp/go-version"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
+	"github.com/ktr0731/go-fuzzyfinder"
 	"github.com/mikejoh/rke2diff/internal/buildinfo"
 )
 
@@ -21,6 +24,8 @@ type rke2diffOptions struct {
 	rke2Versions rkeVersionSlice
 	releases     bool
 	skipRc       bool
+	pick         bool
+	perPage      int
 }
 
 type GitHubProject struct {
@@ -55,7 +60,9 @@ func main() {
 	var rke2diffOpts rke2diffOptions
 	flag.BoolVar(&rke2diffOpts.version, "version", false, "Print the version number.")
 	flag.BoolVar(&rke2diffOpts.releases, "releases", false, "Show all releases.")
-	flag.BoolVar(&rke2diffOpts.skipRc, "skip-rc", false, "Skip release candidate releases.")
+	flag.BoolVar(&rke2diffOpts.skipRc, "skip-rc", true, "Skip release candidate releases.")
+	flag.BoolVar(&rke2diffOpts.pick, "pick", false, "Interactive release picker.")
+	flag.IntVar(&rke2diffOpts.perPage, "per-page", 100, "Skip release candidate releases.")
 	flag.Var(&rke2diffOpts.rke2Versions, "rke2", "RKE2 version to compare, can be set multiple times.")
 	flag.Parse()
 
@@ -78,14 +85,23 @@ func main() {
 
 	ctx := context.Background()
 
-	if rke2diffOpts.releases {
-		releases, _, err := ghClient.Repositories.ListReleases(ctx, project.Owner, project.Repo, &github.ListOptions{
-			PerPage: 1000,
-		})
-		if err != nil {
-			log.Fatal(err)
-		}
+	fetchedReleases, _, err := ghClient.Repositories.ListReleases(ctx, project.Owner, project.Repo, &github.ListOptions{
+		PerPage: rke2diffOpts.perPage,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
 
+	var releases []*github.RepositoryRelease
+
+	for _, release := range fetchedReleases {
+		if rke2diffOpts.skipRc && strings.Contains(release.GetTagName(), "rc") {
+			continue
+		}
+		releases = append(releases, release)
+	}
+
+	if rke2diffOpts.releases {
 		t := table.NewWriter()
 		t.SetOutputMirror(os.Stdout)
 		t.SetStyle(table.StyleLight)
@@ -97,9 +113,6 @@ func main() {
 		t.Style().Title.Align = text.AlignCenter
 
 		for _, release := range releases {
-			if rke2diffOpts.skipRc && strings.Contains(release.GetTagName(), "rc") {
-				continue
-			}
 			t.AppendRow(table.Row{release.GetTagName(), release.GetPublishedAt()})
 		}
 
@@ -108,12 +121,25 @@ func main() {
 		os.Exit(0)
 	}
 
-	// TODO: Use response to tell user how many GH API calls can be done before hitting the rate limit
-	releases, _, err := ghClient.Repositories.ListReleases(ctx, project.Owner, project.Repo, &github.ListOptions{
-		PerPage: 1000,
-	})
-	if err != nil {
-		log.Fatal(err)
+	if rke2diffOpts.pick {
+		var releaseURL string
+		_, err := fuzzyfinder.FindMulti(
+			releases,
+			func(i int) string {
+				releaseURL = *releases[i].HTMLURL
+				return *releases[i].TagName
+			},
+		)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = openURL(releaseURL)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		os.Exit(0)
 	}
 
 	project.Releases = releases
@@ -228,4 +254,21 @@ func getRelease(releases []*github.RepositoryRelease, version string) *github.Re
 		}
 	}
 	return nil
+}
+
+func openURL(url string) error {
+	var cmd string
+	var args []string
+
+	switch runtime.GOOS {
+	case "windows":
+		cmd = "cmd"
+		args = []string{"/c", "start"}
+	case "darwin":
+		cmd = "open"
+	default: // "linux", "freebsd", "openbsd", "netbsd"
+		cmd = "xdg-open"
+	}
+	args = append(args, url)
+	return exec.Command(cmd, args...).Start()
 }
