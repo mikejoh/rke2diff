@@ -1,4 +1,5 @@
 build/**
-**/lint.txt
+
 *.tar.gz
 .vscode/**
+lint.txt

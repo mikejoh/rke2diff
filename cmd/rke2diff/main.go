@@ -201,7 +201,7 @@ func main() {
 
 				if _, ok := rows[component.Name]; !ok {
 					rows[component.Name] = table.Row{
-						component.Name,
+						strings.ToLower(component.Name),
 					}
 				}
 
