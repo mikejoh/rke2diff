@@ -123,7 +123,8 @@ func main() {
 
 	if rke2diffOpts.pick {
 		var releaseURL string
-		_, err := fuzzyfinder.FindMulti(
+
+		idx, err := fuzzyfinder.FindMulti(
 			releases,
 			func(i int) string {
 				releaseURL = *releases[i].HTMLURL
@@ -133,6 +134,8 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
+
+		releaseURL = *releases[idx[0]].HTMLURL
 
 		err = openURL(releaseURL)
 		if err != nil {
