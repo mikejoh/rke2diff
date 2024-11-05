@@ -3,6 +3,7 @@
 `rke2diff` - Diff Rancher RKE2 releases! 🚀
 
 **Notes:**
+
 * This tool uses the GitHub API to fetch releases. The API is rate-limited to 60 requests for unauthenticated requests. More info about rate limiting can be found [here](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28).
 
 ## Install
@@ -17,15 +18,20 @@
 ### Download and run
 
 1. Download (using `v0.1.3` as an example):
-```
+
+```bash
 curl -LO https://github.com/mikejoh/rke2diff/releases/download/0.1.3/rke2diff_0.1.3_linux_amd64.tar.gz
 ```
+
 2. Unpack:
-```
+
+```bash
 tar xzvf rke2diff_0.1.3_linux_amd64.tar.gz
 ```
+
 3. Run:
-```
+
+```bash
 ./rke2diff -version
 ```
 
@@ -35,21 +41,22 @@ tar xzvf rke2diff_0.1.3_linux_amd64.tar.gz
 rke2diff -h
 Usage of ./build/rke2diff:
   -per-page int
-    	Skip release candidate releases. (default 100)
+     Skip release candidate releases. (default 100)
   -pick
-    	Interactive release picker.
+     Interactive release picker.
   -releases
-    	Show all releases.
+     Show all releases.
   -rke2 value
-    	RKE2 version to compare, can be set multiple times.
+     RKE2 version to compare, can be set multiple times.
   -skip-rc
-    	Skip release candidate releases. (default true)
+     Skip release candidate releases. (default true)
   -version
-    	Print the version number.
+     Print the version number.
 ```
 
 Compare to version of RKE2:
-```
+
+```bash
 rke2diff -rke2 v1.28.11+rke2r1 -rke2 v1.31.0+rke2r1
 ┌──────────────────────────────────┬──────────────────────────────┬─────────────────────────────┐
 │ NAME                             │ V1.28.11+RKE2R1 (2024-07-01) │ V1.31.0+RKE2R1 (2024-09-04) │
