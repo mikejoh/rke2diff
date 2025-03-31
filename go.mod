@@ -1,7 +1,7 @@
 module github.com/mikejoh/rke2diff
 
 go 1.22.3
-toolchain go1.23.7
+toolchain go1.24.1
 
 require (
 	github.com/gomarkdown/markdown v0.0.0-20240419095408-642f0ee99ae2
@@ -9,7 +9,7 @@ require (
 	github.com/hashicorp/go-version v1.7.0
 	github.com/jedib0t/go-pretty/v6 v6.6.7
 	github.com/ktr0731/go-fuzzyfinder v0.8.0
-	golang.org/x/net v0.37.0
+	golang.org/x/net v0.38.0
 )
 
 require (
