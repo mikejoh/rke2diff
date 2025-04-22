@@ -9,7 +9,7 @@ require (
 	github.com/hashicorp/go-version v1.7.0
 	github.com/jedib0t/go-pretty/v6 v6.6.7
 	github.com/ktr0731/go-fuzzyfinder v0.9.0
-	golang.org/x/net v0.38.0
+	golang.org/x/net v0.39.0
 )
 
 require (
