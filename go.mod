@@ -8,7 +8,7 @@ require (
 	github.com/gomarkdown/markdown v0.0.0-20240419095408-642f0ee99ae2
 	github.com/google/go-github/v62 v62.0.0
 	github.com/hashicorp/go-version v1.7.0
-	github.com/jedib0t/go-pretty/v6 v6.6.8
+	github.com/jedib0t/go-pretty/v6 v6.7.1
 	github.com/ktr0731/go-fuzzyfinder v0.9.0
 	golang.org/x/net v0.46.0
 )
