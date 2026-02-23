@@ -8,7 +8,7 @@ CMDPATH := ./cmd/$(APPNAME)
 BUILDPATH := ./build
 
 # Go parameters
-GOVERSION=1.22.2
+GOVERSION=1.24.1
 GOCMD := go
 GOBUILD := $(GOCMD) build
 GOCLEAN := $(GOCMD) clean
