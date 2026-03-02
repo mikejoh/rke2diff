@@ -1,8 +1,6 @@
 module github.com/mikejoh/rke2diff
 
-go 1.24.0
-
-toolchain go1.24.1
+go 1.25.0
 
 require (
 	github.com/gomarkdown/markdown v0.0.0-20240419095408-642f0ee99ae2
@@ -10,7 +8,7 @@ require (
 	github.com/hashicorp/go-version v1.7.0
 	github.com/jedib0t/go-pretty/v6 v6.7.8
 	github.com/ktr0731/go-fuzzyfinder v0.9.0
-	golang.org/x/net v0.49.0
+	golang.org/x/net v0.51.0
 )
 
 require (
@@ -23,7 +21,7 @@ require (
 	github.com/nsf/termbox-go v1.1.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
-	golang.org/x/sys v0.40.0 // indirect
-	golang.org/x/term v0.39.0 // indirect
-	golang.org/x/text v0.33.0 // indirect
+	golang.org/x/sys v0.41.0 // indirect
+	golang.org/x/term v0.40.0 // indirect
+	golang.org/x/text v0.34.0 // indirect
 )
