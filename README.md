@@ -4,7 +4,7 @@
 
 **Notes:**
 
-* This tool uses the GitHub API to fetch releases. The API is rate-limited to 60 requests for unauthenticated requests. More info about rate limiting can be found [here](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28).
+* This tool uses the GitHub API to fetch releases. The API is rate-limited to 60 requests for unauthenticated requests. Set the `GITHUB_TOKEN` environment variable to authenticate and raise this to 5,000 requests/hour. More info about rate limiting can be found [here](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28).
 
 ## Install
 

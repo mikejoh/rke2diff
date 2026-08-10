@@ -78,6 +78,9 @@ func main() {
 	}
 
 	ghClient := github.NewClient(nil)
+	if token := os.Getenv("GITHUB_TOKEN"); token != "" {
+		ghClient = ghClient.WithAuthToken(token)
+	}
 
 	project := GitHubProject{
 		Owner:    "rancher",
