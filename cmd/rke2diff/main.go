@@ -68,6 +68,11 @@ func main() {
 	flag.Var(&rke2diffOpts.rke2Versions, "rke2", "RKE2 version to compare, can be set multiple times.")
 	flag.Parse()
 
+	if flag.NFlag() == 0 {
+		flag.Usage()
+		os.Exit(1)
+	}
+
 	if rke2diffOpts.version {
 		fmt.Println(buildinfo.Get())
 		os.Exit(0)
