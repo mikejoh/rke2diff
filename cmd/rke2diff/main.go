@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/exec"
 	"runtime"
@@ -62,7 +64,7 @@ func main() {
 	flag.BoolVar(&rke2diffOpts.releases, "releases", false, "Show all releases.")
 	flag.BoolVar(&rke2diffOpts.skipRc, "skip-rc", true, "Skip release candidate releases.")
 	flag.BoolVar(&rke2diffOpts.pick, "pick", false, "Interactive release picker.")
-	flag.IntVar(&rke2diffOpts.perPage, "per-page", 100, "Skip release candidate releases.")
+	flag.IntVar(&rke2diffOpts.perPage, "per-page", 100, "Number of releases to fetch per page from the GitHub API (max 100).")
 	flag.Var(&rke2diffOpts.rke2Versions, "rke2", "RKE2 version to compare, can be set multiple times.")
 	flag.Parse()
 
@@ -85,11 +87,28 @@ func main() {
 
 	ctx := context.Background()
 
-	fetchedReleases, _, err := ghClient.Repositories.ListReleases(ctx, project.Owner, project.Repo, &github.ListOptions{
+	listOpts := &github.ListOptions{
 		PerPage: rke2diffOpts.perPage,
-	})
-	if err != nil {
-		log.Fatal(err)
+	}
+
+	var fetchedReleases []*github.RepositoryRelease
+
+	for {
+		page, resp, err := ghClient.Repositories.ListReleases(ctx, project.Owner, project.Repo, listOpts)
+		if err != nil {
+			// GitHub caps this endpoint at 1000 results (page * per_page > 1000
+			// returns a 422); treat that as end-of-results rather than a fatal error.
+			var ghErr *github.ErrorResponse
+			if errors.As(err, &ghErr) && ghErr.Response != nil && ghErr.Response.StatusCode == http.StatusUnprocessableEntity {
+				break
+			}
+			log.Fatal(err)
+		}
+		fetchedReleases = append(fetchedReleases, page...)
+		if resp.NextPage == 0 {
+			break
+		}
+		listOpts.Page = resp.NextPage
 	}
 
 	var releases []*github.RepositoryRelease
