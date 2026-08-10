@@ -4,7 +4,7 @@
 
 **Notes:**
 
-* This tool uses the GitHub API to fetch releases. The API is rate-limited to 60 requests for unauthenticated requests. More info about rate limiting can be found [here](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28).
+* This tool uses the GitHub API to fetch releases. The API is rate-limited to 60 requests for unauthenticated requests. Set the `GITHUB_TOKEN` environment variable to authenticate and raise this to 5,000 requests/hour. More info about rate limiting can be found [here](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28).
 
 ## Install
 
@@ -17,16 +17,16 @@
 
 ### Download and run
 
-1. Download (using `v0.1.3` as an example):
+1. Download (using `0.2.1` as an example, check the [releases page](https://github.com/mikejoh/rke2diff/releases) for the latest version):
 
 ```bash
-curl -LO https://github.com/mikejoh/rke2diff/releases/download/0.1.3/rke2diff_0.1.3_linux_amd64.tar.gz
+curl -LO https://github.com/mikejoh/rke2diff/releases/download/0.2.1/rke2diff_0.2.1_linux_amd64.tar.gz
 ```
 
 2. Unpack:
 
 ```bash
-tar xzvf rke2diff_0.1.3_linux_amd64.tar.gz
+tar xzvf rke2diff_0.2.1_linux_amd64.tar.gz
 ```
 
 3. Run:
@@ -41,7 +41,7 @@ tar xzvf rke2diff_0.1.3_linux_amd64.tar.gz
 rke2diff -h
 Usage of ./build/rke2diff:
   -per-page int
-     Skip release candidate releases. (default 100)
+     Number of releases to fetch per page from the GitHub API (max 100). (default 100)
   -pick
      Interactive release picker.
   -releases
