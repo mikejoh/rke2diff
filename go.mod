@@ -1,6 +1,6 @@
 module github.com/mikejoh/rke2diff
 
-go 1.25.0
+go 1.26.4
 
 require (
 	github.com/gomarkdown/markdown v0.0.0-20240419095408-642f0ee99ae2
