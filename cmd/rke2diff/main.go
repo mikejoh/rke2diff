@@ -12,6 +12,7 @@ import (
 	"runtime"
 	"sort"
 	"strings"
+	"sync"
 
 	"github.com/google/go-github/v62/github"
 	gversion "github.com/hashicorp/go-version"
@@ -95,28 +96,9 @@ func main() {
 
 	ctx := context.Background()
 
-	listOpts := &github.ListOptions{
-		PerPage: rke2diffOpts.perPage,
-	}
-
-	var fetchedReleases []*github.RepositoryRelease
-
-	for {
-		page, resp, err := ghClient.Repositories.ListReleases(ctx, project.Owner, project.Repo, listOpts)
-		if err != nil {
-			// GitHub caps this endpoint at 1000 results (page * per_page > 1000
-			// returns a 422); treat that as end-of-results rather than a fatal error.
-			var ghErr *github.ErrorResponse
-			if errors.As(err, &ghErr) && ghErr.Response != nil && ghErr.Response.StatusCode == http.StatusUnprocessableEntity {
-				break
-			}
-			log.Fatal(err)
-		}
-		fetchedReleases = append(fetchedReleases, page...)
-		if resp.NextPage == 0 {
-			break
-		}
-		listOpts.Page = resp.NextPage
+	fetchedReleases, err := fetchAllReleases(ctx, ghClient, project.Owner, project.Repo, rke2diffOpts.perPage)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	var releases []*github.RepositoryRelease
@@ -266,6 +248,82 @@ func main() {
 	}
 
 	t.Render()
+}
+
+// maxReleasePages is the largest page number the GitHub releases-list endpoint
+// will actually serve: it caps results at 1000 regardless of the reported
+// last page, returning a 422 for anything beyond that.
+const maxReleasePages = 1000
+
+// releasePageConcurrency bounds how many pages are fetched at once, to avoid
+// tripping GitHub's secondary (abuse-detection) rate limits.
+const releasePageConcurrency = 5
+
+// fetchAllReleases fetches every release for owner/repo, paginating
+// concurrently once the first page reveals how many pages there are.
+func fetchAllReleases(ctx context.Context, ghClient *github.Client, owner, repo string, perPage int) ([]*github.RepositoryRelease, error) {
+	firstPage, resp, err := ghClient.Repositories.ListReleases(ctx, owner, repo, &github.ListOptions{PerPage: perPage})
+	if err != nil {
+		return nil, err
+	}
+
+	lastPage := resp.LastPage
+	if perPage > 0 {
+		if max := maxReleasePages / perPage; lastPage > max {
+			lastPage = max
+		}
+	}
+
+	pages := make([][]*github.RepositoryRelease, lastPage+1)
+	pages[1] = firstPage
+
+	var (
+		wg       sync.WaitGroup
+		sem      = make(chan struct{}, releasePageConcurrency)
+		mu       sync.Mutex
+		firstErr error
+	)
+
+	for page := 2; page <= lastPage; page++ {
+		wg.Add(1)
+		sem <- struct{}{}
+		go func(page int) {
+			defer wg.Done()
+			defer func() { <-sem }()
+
+			opts := &github.ListOptions{PerPage: perPage, Page: page}
+			release, _, err := ghClient.Repositories.ListReleases(ctx, owner, repo, opts)
+			if err != nil {
+				// GitHub caps this endpoint at 1000 results (page * per_page > 1000
+				// returns a 422); treat that as end-of-results rather than an error.
+				var ghErr *github.ErrorResponse
+				if errors.As(err, &ghErr) && ghErr.Response != nil && ghErr.Response.StatusCode == http.StatusUnprocessableEntity {
+					return
+				}
+				mu.Lock()
+				if firstErr == nil {
+					firstErr = err
+				}
+				mu.Unlock()
+				return
+			}
+
+			mu.Lock()
+			pages[page] = release
+			mu.Unlock()
+		}(page)
+	}
+	wg.Wait()
+
+	if firstErr != nil {
+		return nil, firstErr
+	}
+
+	var releases []*github.RepositoryRelease
+	for _, page := range pages {
+		releases = append(releases, page...)
+	}
+	return releases, nil
 }
 
 func findRelease(releases []*github.RepositoryRelease, version string) *github.RepositoryRelease {
