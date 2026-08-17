@@ -8,7 +8,7 @@ require (
 	github.com/hashicorp/go-version v1.9.0
 	github.com/jedib0t/go-pretty/v6 v6.8.3
 	github.com/ktr0731/go-fuzzyfinder v0.9.0
-	golang.org/x/net v0.57.0
+	golang.org/x/net v0.58.0
 )
 
 require (
@@ -23,5 +23,5 @@ require (
 	github.com/rivo/uniseg v0.4.7 // indirect
 	golang.org/x/sys v0.47.0 // indirect
 	golang.org/x/term v0.45.0 // indirect
-	golang.org/x/text v0.40.0 // indirect
+	golang.org/x/text v0.41.0 // indirect
 )
