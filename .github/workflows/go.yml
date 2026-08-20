@@ -13,6 +13,8 @@ jobs:
         uses: actions/setup-go@v7
         with:
           go-version-file: go.mod
+      - name: Lint
+        uses: golangci/golangci-lint-action@v6
       - name: Test
         run: make test
       - name: Build

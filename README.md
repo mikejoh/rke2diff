@@ -1,5 +1,10 @@
 # rke2diff
 
+[![CI](https://github.com/mikejoh/rke2diff/actions/workflows/go.yml/badge.svg)](https://github.com/mikejoh/rke2diff/actions/workflows/go.yml)
+[![Release](https://img.shields.io/github/v/release/mikejoh/rke2diff)](https://github.com/mikejoh/rke2diff/releases/latest)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mikejoh/rke2diff)](https://goreportcard.com/report/github.com/mikejoh/rke2diff)
+[![License](https://img.shields.io/github/license/mikejoh/rke2diff)](https://github.com/mikejoh/rke2diff/blob/main/LICENSE)
+
 `rke2diff` - Diff Rancher RKE2 releases! 🚀
 
 **Notes:**
